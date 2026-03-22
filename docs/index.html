@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>pptx-codex</title>
+  <meta name="description" content="面向 Codex 的 PowerPoint/PPTX 技能，支持读取、编辑、从零创建与强制 QA。">
+  <link rel="stylesheet" href="./assets/skill.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap topbar-inner">
+      <a class="brand" href="https://github.com/lin521045/codex-pptx-skill">Skills</a>
+      <nav class="topnav">
+        <a href="https://github.com/lin521045/codex-pptx-skill">仓库</a>
+        <a href="../README.md">README</a>
+        <a href="../skills/pptx-codex/SKILL.md">SKILL.md</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap page">
+    <section class="hero">
+      <div class="hero-main">
+        <div class="breadcrumbs">
+          <span>skills</span>
+          <span>/</span>
+          <span>lin521045</span>
+          <span>/</span>
+          <span>codex-pptx-skill</span>
+          <span>/</span>
+          <span>pptx-codex</span>
+        </div>
+        <h1>pptx-codex</h1>
+        <pre class="install"><code>$ npx skills add https://github.com/lin521045/codex-pptx-skill --skill pptx-codex</code></pre>
+
+        <h2>摘要</h2>
+        <p class="lead">创建、编辑、读取和处理 PowerPoint 演示文稿，并提供设计指导与质量保证流程。</p>
+        <ul class="summary-list">
+          <li>支持三条主要工作流：读取和提取现有 <code>.pptx</code> 文本、通过模板解包与重打包编辑演示文稿、使用 PptxGenJS 从零创建 deck</li>
+          <li>提供 10 组精选配色和字体搭配，避免通用 AI 幻灯片风格，并给出版式模式、间距与对比度规则</li>
+          <li>提供强制 QA 流程：占位符检查、图片渲染、视觉复核与 Codex 适配的二轮检查流程</li>
+          <li>提供文本提取、缩略图生成、XML 解包、复制 slide、清理、重打包、PDF/图片导出等工具</li>
+        </ul>
+      </div>
+
+      <aside class="hero-side">
+        <div class="side-card">
+          <div class="side-kicker">仓库</div>
+          <a href="https://github.com/lin521045/codex-pptx-skill">lin521045/codex-pptx-skill</a>
+        </div>
+        <div class="side-card">
+          <div class="side-kicker">文档</div>
+          <a href="../skills/pptx-codex/SKILL.md">SKILL.md</a>
+          <a href="../skills/pptx-codex/editing.md">editing.md</a>
+          <a href="../skills/pptx-codex/pptxgenjs.md">pptxgenjs.md</a>
+        </div>
+        <div class="side-card">
+          <div class="side-kicker">定位</div>
+          <p>与参考 <code>pptx</code> skill 尽量保持相同的信息架构与工作流能力。</p>
+          <p>唯一差异：中文化，并适配 Codex 的调用约束。</p>
+        </div>
+        <div class="side-card">
+          <div class="side-kicker">许可</div>
+          <p>MIT</p>
+        </div>
+      </aside>
+    </section>
+
+    <section class="content-grid">
+      <article class="content">
+        <h2>快速参考</h2>
+        <table>
+          <thead>
+            <tr><th>任务</th><th>指南</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>阅读/分析内容</td><td><code>python skills/pptx-codex/scripts/extract_text.py presentation.pptx</code></td></tr>
+            <tr><td>编辑或基于模板创建</td><td>阅读 <a href="../skills/pptx-codex/editing.md">editing.md</a></td></tr>
+            <tr><td>从零创建</td><td>阅读 <a href="../skills/pptx-codex/pptxgenjs.md">pptxgenjs.md</a></td></tr>
+          </tbody>
+        </table>
+
+        <hr>
+
+        <h2>读取内容</h2>
+<pre><code># 文本提取
+python skills/pptx-codex/scripts/extract_text.py presentation.pptx
+
+# 可视化缩略总览
+python skills/pptx-codex/scripts/thumbnail.py presentation.pptx
+
+# 原始 XML
+python skills/pptx-codex/scripts/office/unpack.py presentation.pptx unpacked/</code></pre>
+
+        <hr>
+
+        <h2>编辑工作流</h2>
+        <p>完整说明见 <a href="../skills/pptx-codex/editing.md">editing.md</a>。</p>
+        <ol>
+          <li>先用 <code>thumbnail.py</code> 分析模板</li>
+          <li>解包</li>
+          <li>操作 slide 结构</li>
+          <li>编辑内容</li>
+          <li>清理</li>
+          <li>重打包</li>
+          <li>执行 QA</li>
+        </ol>
+
+        <hr>
+
+        <h2>从零创建</h2>
+        <p>完整说明见 <a href="../skills/pptx-codex/pptxgenjs.md">pptxgenjs.md</a>。</p>
+        <p>当没有模板或参考 deck 时，使用 PptxGenJS 从零创建。</p>
+
+        <hr>
+
+        <h2>设计思路</h2>
+        <p><strong>不要做无聊的 PPT。</strong> 白底 bullet 页不适合答辩、汇报或路演。每一页都应该至少有一个视觉锚点。</p>
+
+        <h3>开始前</h3>
+        <ul>
+          <li>选择与内容高度相关的主配色，而不是默认蓝色</li>
+          <li>让一个颜色占主导视觉权重，另外 1-2 个做辅助</li>
+          <li>确定深浅结构：深色封面/结尾 + 浅色正文，或整套深色</li>
+          <li>为整套 deck 选定一个反复出现的视觉母题</li>
+        </ul>
+
+        <h3>配色方案</h3>
+        <table>
+          <thead>
+            <tr><th>主题</th><th>主色</th><th>辅色</th><th>强调色</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>午夜行政风</td><td><code>1E2761</code></td><td><code>CADCFC</code></td><td><code>FFFFFF</code></td></tr>
+            <tr><td>森林与苔藓</td><td><code>2C5F2D</code></td><td><code>97BC62</code></td><td><code>F5F5F5</code></td></tr>
+            <tr><td>珊瑚能量</td><td><code>F96167</code></td><td><code>F9E795</code></td><td><code>2F3C7E</code></td></tr>
+            <tr><td>暖陶土</td><td><code>B85042</code></td><td><code>E7E8D1</code></td><td><code>A7BEAE</code></td></tr>
+            <tr><td>海洋渐层</td><td><code>065A82</code></td><td><code>1C7293</code></td><td><code>21295C</code></td></tr>
+            <tr><td>木炭极简</td><td><code>36454F</code></td><td><code>F2F2F2</code></td><td><code>212121</code></td></tr>
+            <tr><td>青柠信任感</td><td><code>028090</code></td><td><code>00A896</code></td><td><code>02C39A</code></td></tr>
+            <tr><td>莓果奶油</td><td><code>6D2E46</code></td><td><code>A26769</code></td><td><code>ECE2D0</code></td></tr>
+            <tr><td>鼠尾草宁静</td><td><code>84B59F</code></td><td><code>69A297</code></td><td><code>50808E</code></td></tr>
+            <tr><td>樱桃强对比</td><td><code>990011</code></td><td><code>FCF6F5</code></td><td><code>2F3C7E</code></td></tr>
+          </tbody>
+        </table>
+
+        <h3>每页建议</h3>
+        <p><strong>每一页都需要至少一个视觉元素</strong>，例如图片、图表、图标、形状、指标卡片或时间线。</p>
+        <div class="two-col">
+          <div>
+            <h4>布局</h4>
+            <ul>
+              <li>双栏布局</li>
+              <li>图标 + 文本行</li>
+              <li>2x2 / 2x3 卡片网格</li>
+              <li>半出血图片</li>
+            </ul>
+          </div>
+          <div>
+            <h4>数据展示</h4>
+            <ul>
+              <li>大数字指标</li>
+              <li>对比页</li>
+              <li>时间线 / 流程页</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3>字体</h3>
+        <table>
+          <thead>
+            <tr><th>标题字体</th><th>正文字体</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Georgia</td><td>Calibri</td></tr>
+            <tr><td>Arial Black</td><td>Arial</td></tr>
+            <tr><td>Calibri</td><td>Calibri Light</td></tr>
+            <tr><td>Cambria</td><td>Calibri</td></tr>
+            <tr><td>Trebuchet MS</td><td>Calibri</td></tr>
+            <tr><td>Impact</td><td>Arial</td></tr>
+            <tr><td>Palatino</td><td>Garamond</td></tr>
+            <tr><td>Consolas</td><td>Calibri</td></tr>
+          </tbody>
+        </table>
+
+        <table>
+          <thead>
+            <tr><th>元素</th><th>建议字号</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>幻灯片标题</td><td>36-44pt 粗体</td></tr>
+            <tr><td>分区标题</td><td>20-24pt 粗体</td></tr>
+            <tr><td>正文</td><td>14-16pt</td></tr>
+            <tr><td>注释</td><td>10-12pt</td></tr>
+          </tbody>
+        </table>
+
+        <h3>间距</h3>
+        <ul>
+          <li><code>0.5"</code> 最小边距</li>
+          <li><code>0.3-0.5"</code> 内容块间距</li>
+          <li>保留呼吸感，不要塞满每一寸画布</li>
+        </ul>
+
+        <h3>避免</h3>
+        <ul>
+          <li>整套重复同一种布局</li>
+          <li>正文居中排版</li>
+          <li>标题和正文缺乏尺寸对比</li>
+          <li>默认蓝白配色</li>
+          <li>标题下装饰线</li>
+          <li>纯文字页</li>
+          <li>低对比文字和图标</li>
+        </ul>
+
+        <hr>
+
+        <h2>QA（必须）</h2>
+        <p><strong>默认假设第一页导出一定有问题。</strong> QA 不是确认流程，而是查错流程。</p>
+
+        <h3>内容 QA</h3>
+<pre><code>python skills/pptx-codex/scripts/extract_text.py output.pptx
+python skills/pptx-codex/scripts/check_placeholders.py output.pptx</code></pre>
+
+        <h3>视觉 QA</h3>
+        <p>将幻灯片渲染为图片后，检查：</p>
+        <ul>
+          <li>元素重叠</li>
+          <li>文本裁切或溢出</li>
+          <li>页边距不足</li>
+          <li>卡片间距过近</li>
+          <li>左右不对齐</li>
+          <li>低对比文字/图标</li>
+          <li>占位符残留</li>
+        </ul>
+        <p>Codex 版说明：只有用户明确允许多代理时，才使用子代理做第二轮审查；否则执行双轮人工复核。</p>
+
+        <h3>验证循环</h3>
+        <ol>
+          <li>生成 slides</li>
+          <li>转图片</li>
+          <li>列出问题</li>
+          <li>修复问题</li>
+          <li>复查受影响页面</li>
+        </ol>
+
+        <hr>
+
+        <h2>转换为图片</h2>
+<pre><code>python skills/pptx-codex/scripts/office/soffice.py --headless --convert-to pdf output.pptx
+python skills/pptx-codex/scripts/office/render.py output.pptx rendered/</code></pre>
+
+        <p>也可以直接用：</p>
+<pre><code>python skills/pptx-codex/scripts/thumbnail.py output.pptx</code></pre>
+
+        <hr>
+
+        <h2>依赖</h2>
+        <ul>
+          <li><code>pip install "markitdown[pptx]"</code>：可选文本抽取</li>
+          <li><code>pip install Pillow</code>：缩略图拼板</li>
+          <li><code>pip install PyMuPDF</code>：PDF 栅格化</li>
+          <li><code>npm install pptxgenjs</code>：从零创建</li>
+          <li>LibreOffice <code>soffice</code>：PDF 转换</li>
+          <li>Microsoft PowerPoint（Windows，可选）：PDF 导出和高保真渲染</li>
+        </ul>
+      </article>
+    </section>
+  </main>
+</body>
+</html>
+
