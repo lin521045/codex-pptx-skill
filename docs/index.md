@@ -2,6 +2,9 @@
 
 Build, inspect, edit, and quality-check PowerPoint decks with Codex.
 
+- Repository: [github.com/lin521045/codex-pptx-skill](https://github.com/lin521045/codex-pptx-skill)
+- Installable skill path: `skills/pptx-codex/`
+
 ## What you get
 
 - A drop-in Codex skill at `skills/pptx-codex/`
@@ -52,4 +55,3 @@ python -m pip install -r requirements.txt
 
 - Full repository guide: [README.md](../README.md)
 - Usage guide: [usage.md](usage.md)
-

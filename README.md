@@ -1,5 +1,9 @@
 # Codex PPTX Skill
 
+[![CI](https://github.com/lin521045/codex-pptx-skill/actions/workflows/validate.yml/badge.svg)](https://github.com/lin521045/codex-pptx-skill/actions/workflows/validate.yml)
+[![Docs](https://img.shields.io/badge/docs-GitHub%20Pages-0A66C2)](https://lin521045.github.io/codex-pptx-skill/)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+
 `codex-pptx-skill` is a public repository that packages a reusable Codex skill for PowerPoint work. It is designed to feel close to Anthropic's public `pptx` skill in capability, while being an original implementation that can be installed and used in Codex.
 
 This repository contains:
