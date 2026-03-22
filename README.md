@@ -1,143 +1,228 @@
-# Codex PPTX Skill
+# pptx-codex
 
 [![CI](https://github.com/lin521045/codex-pptx-skill/actions/workflows/validate.yml/badge.svg)](https://github.com/lin521045/codex-pptx-skill/actions/workflows/validate.yml)
 [![Docs](https://img.shields.io/badge/docs-GitHub%20Pages-0A66C2)](https://lin521045.github.io/codex-pptx-skill/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-面向 Codex 的 PowerPoint/PPTX 技能仓库。它的目标不是只提供一个“生成 PPT”的提示词，而是提供一整套可复用的工作流：读取现有 `.pptx`、基于模板安全编辑、从零生成新 deck、导出图片做视觉检查、扫描占位符、以及执行完整 QA。
-
-这个项目参考了 Anthropic 公共 `pptx` skill 展示出来的能力边界与工作流形态，但仓库内容为面向 Codex 的原创实现，不直接复制上游专有材料。
-
-## 快速入口
-
-- GitHub 仓库：[lin521045/codex-pptx-skill](https://github.com/lin521045/codex-pptx-skill)
-- 项目首页：[lin521045.github.io/codex-pptx-skill](https://lin521045.github.io/codex-pptx-skill/)
-- 可安装 skill：[`skills/pptx-codex`](skills/pptx-codex)
-- Skill 入口说明：[`skills/pptx-codex/SKILL.md`](skills/pptx-codex/SKILL.md)
-- 第一份示例工作流模板：[`examples/first-ppt-workflow-template.zh.md`](examples/first-ppt-workflow-template.zh.md)
-
-## 这个仓库解决什么问题
-
-很多“AI 生成 PPT”方案只会产出一份普通大纲，最后仍然需要人工返工样式、结构和细节。这个仓库把 PPT 任务拆成了可执行的工程流程：
-
-- 先读 deck，再决定是“模板编辑”还是“从零创建”
-- 用脚本处理 `.pptx` 的提取、解包、重打包和渲染
-- 明确要求视觉检查，而不是只看文字是否齐全
-- 保留设计 playbook，避免做出千篇一律的 AI 幻灯片
-
-## 主要能力
-
-- 读取和抽取现有 `.pptx` 内容
-- 导出单页图片和缩略图拼板，便于快速审阅版式
-- 解包 `.pptx` 为可编辑 XML，并重新打包回有效文件
-- 在模板改版场景下复制 slide、清理孤儿文件、检查残留占位符
-- 指导 Codex 用 PptxGenJS 从零创建 deck
-- 用设计规范和 QA 流程约束输出质量
-
-## 仓库结构
-
-```text
-.
-|- README.md
-|- requirements.txt
-|- docs/
-|  |- _config.yml
-|  |- index.md
-|  `- usage.md
-|- examples/
-|  |- first-ppt-workflow-template.zh.md
-|  |- sample-codex-prompt.zh.md
-|  |- source-brief-template.md
-|  |- source-brief-template.zh.md
-|  `- starter-pptxgenjs.js
-|- tools/
-|  `- validate_skill.py
-`- skills/
-   `- pptx-codex/
-      |- SKILL.md
-      |- agents/openai.yaml
-      |- references/
-      `- scripts/
+```bash
+npx skills add https://github.com/lin521045/codex-pptx-skill --skill pptx-codex
 ```
 
-## 安装到 Codex
+## 摘要
 
-1. 克隆本仓库。
-2. 将 [`skills/pptx-codex`](skills/pptx-codex) 复制到 `$CODEX_HOME/skills/`。
-3. 保持目录名为 `pptx-codex`。
+创建、编辑、读取和处理 PowerPoint 演示文稿，并提供设计指导与质量保证流程。
 
-Windows PowerShell:
+- 支持三条主要工作流：读取/提取现有 `.pptx` 文本、通过模板解包与重打包编辑演示文稿、使用 PptxGenJS 从零创建 deck
+- 提供 10 组配色和字体搭配建议，避免做出通用 AI 幻灯片风格，并给出版式模式、间距和对比度规则
+- 提供强制 QA 流程：占位符检查、缩略图/单页渲染、视觉复核，以及适配 Codex 的二轮检查流程
+- 提供文本提取、缩略图生成、XML 解包、复制 slide、清理关系、PDF/图片导出等工具
 
-```powershell
-Copy-Item -Recurse .\skills\pptx-codex "$env:CODEX_HOME\skills\pptx-codex"
+## SKILL.md
+
+入口文件：[`skills/pptx-codex/SKILL.md`](skills/pptx-codex/SKILL.md)
+
+## 快速参考
+
+| 任务 | 指南 |
+| --- | --- |
+| 阅读/分析内容 | `python skills/pptx-codex/scripts/extract_text.py presentation.pptx` |
+| 编辑或基于模板创建 | 阅读 [`skills/pptx-codex/editing.md`](skills/pptx-codex/editing.md) |
+| 从零创建 | 阅读 [`skills/pptx-codex/pptxgenjs.md`](skills/pptx-codex/pptxgenjs.md) |
+
+---
+
+## 读取内容
+
+```bash
+# 文本提取
+python skills/pptx-codex/scripts/extract_text.py presentation.pptx
+
+# 可视化缩略总览
+python skills/pptx-codex/scripts/thumbnail.py presentation.pptx
+
+# 原始 XML
+python skills/pptx-codex/scripts/office/unpack.py presentation.pptx unpacked/
 ```
 
-## 安装依赖
+如需和参考 skill 保持接近的使用方式，并且本地已安装 `markitdown[pptx]`：
 
-```powershell
-python -m pip install -r requirements.txt
+```bash
+python -m markitdown presentation.pptx
 ```
 
-可选工具：
+---
 
-- Windows 上的 Microsoft PowerPoint：用于高保真导出 slide 图片
-- LibreOffice：在没有 PowerPoint 时可作为 PDF 渲染后备方案
+## 编辑工作流
 
-## 常用命令
+完整说明见 [`skills/pptx-codex/editing.md`](skills/pptx-codex/editing.md)。
 
-```powershell
-python .\skills\pptx-codex\scripts\extract_text.py .\deck.pptx
-python .\skills\pptx-codex\scripts\thumbnail.py .\deck.pptx
-python .\skills\pptx-codex\scripts\check_placeholders.py .\deck.pptx
-python .\skills\pptx-codex\scripts\office\unpack.py .\deck.pptx .\unpacked
-python .\skills\pptx-codex\scripts\office\pack.py .\unpacked .\output.pptx
+1. 用 `thumbnail.py` 分析模板
+2. 解包
+3. 操作 slide 结构
+4. 编辑内容
+5. 清理
+6. 重新打包
+7. 执行 QA
+
+---
+
+## 从零创建
+
+完整说明见 [`skills/pptx-codex/pptxgenjs.md`](skills/pptx-codex/pptxgenjs.md)。
+
+当没有模板或参考 deck 时，使用 PptxGenJS 从零创建。
+
+---
+
+## 设计思路
+
+不要做无聊的 PPT。白底 bullet 页不适合答辩、汇报或路演。
+
+### 开始前
+
+- 选择与内容高度相关的主配色，而不是默认蓝色
+- 一个颜色占主导，其他颜色只做辅助
+- 决定深浅结构：深色封面/结尾 + 浅色正文，或整套深色
+- 选择一个能贯穿整套 deck 的视觉母题
+
+### 配色方案
+
+| 主题 | 主色 | 辅色 | 强调色 |
+| --- | --- | --- | --- |
+| 午夜行政风 | `1E2761` | `CADCFC` | `FFFFFF` |
+| 森林与苔藓 | `2C5F2D` | `97BC62` | `F5F5F5` |
+| 珊瑚能量 | `F96167` | `F9E795` | `2F3C7E` |
+| 暖陶土 | `B85042` | `E7E8D1` | `A7BEAE` |
+| 海洋渐层 | `065A82` | `1C7293` | `21295C` |
+| 木炭极简 | `36454F` | `F2F2F2` | `212121` |
+| 青柠信任感 | `028090` | `00A896` | `02C39A` |
+| 莓果奶油 | `6D2E46` | `A26769` | `ECE2D0` |
+| 鼠尾草宁静 | `84B59F` | `69A297` | `50808E` |
+| 樱桃强对比 | `990011` | `FCF6F5` | `2F3C7E` |
+
+### 每页建议
+
+- 双栏布局
+- 图标 + 文本行
+- 2x2 / 2x3 卡片网格
+- 半出血图片
+- 大数字指标
+- 对比页
+- 时间线 / 流程页
+
+### 字体
+
+| 标题字体 | 正文字体 |
+| --- | --- |
+| Georgia | Calibri |
+| Arial Black | Arial |
+| Calibri | Calibri Light |
+| Cambria | Calibri |
+| Trebuchet MS | Calibri |
+| Impact | Arial |
+| Palatino | Garamond |
+| Consolas | Calibri |
+
+| 元素 | 尺寸 |
+| --- | --- |
+| 幻灯片标题 | 36-44pt 粗体 |
+| 分区标题 | 20-24pt 粗体 |
+| 正文 | 14-16pt |
+| 注释 | 10-12pt |
+
+### 间距
+
+- 最小边距 `0.5"`
+- 内容块之间 `0.3-0.5"`
+- 保留呼吸感，不要塞满
+
+### 避免
+
+- 整套使用同一种布局
+- 大段正文居中
+- 标题和正文没有明显字号对比
+- 默认蓝白配色
+- 标题下加装饰线
+- 纯文字页
+- 忽略文本框 padding
+- 低对比文字和图标
+
+---
+
+## QA（必须）
+
+默认第一页导出一定有问题，QA 要按“找 bug”思路进行。
+
+### 内容 QA
+
+```bash
+python skills/pptx-codex/scripts/extract_text.py output.pptx
+python skills/pptx-codex/scripts/check_placeholders.py output.pptx
 ```
 
-## 推荐工作流
+可选：
 
-1. 用 `extract_text.py` 和 `thumbnail.py` 看清输入 deck。
-2. 判断是沿用模板，还是从零创建。
-3. 先做结构，再填内容，再跑视觉 QA。
-4. 输出前必须执行占位符检查和二次复核。
-
-## 示例文件
-
-仓库已经放入一套“首份示例 PPT 工作流模板”：
-
-- [`examples/first-ppt-workflow-template.zh.md`](examples/first-ppt-workflow-template.zh.md)
-- [`examples/sample-codex-prompt.zh.md`](examples/sample-codex-prompt.zh.md)
-- [`examples/source-brief-template.zh.md`](examples/source-brief-template.zh.md)
-- [`examples/starter-pptxgenjs.js`](examples/starter-pptxgenjs.js)
-
-如果你想直接运行 starter 脚本：
-
-```powershell
-npm install pptxgenjs
-node .\examples\starter-pptxgenjs.js
+```bash
+python -m markitdown output.pptx
 ```
 
-它们可以直接作为：
+### 视觉 QA
 
-- 给 Codex 的首轮任务模板
-- 项目立项时的 PPT brief 模板
-- 从零生成 deck 的 starter 文件
+将 slide 导出成图片后逐页检查：
 
-## 文档
+- 元素重叠
+- 文本裁切或溢出
+- 页边距不足
+- 卡片间距过近
+- 左右未对齐
+- 文本/图标对比不足
+- 仍有占位内容
 
-- 项目首页：[`docs/index.md`](docs/index.md)
-- 使用说明：[`docs/usage.md`](docs/usage.md)
-- Skill 入口：[`skills/pptx-codex/SKILL.md`](skills/pptx-codex/SKILL.md)
+Codex 版说明：
 
-## 验证状态
+- 只有在用户明确允许多代理时，才用子代理做第二轮视觉审查
+- 否则执行双轮人工复核
 
-本仓库已经完成以下验证：
+### 验证循环
 
-- skill frontmatter 校验通过
-- helper scripts 语法校验通过
-- 本地链路验证通过：文本提取、占位符检查、解包、复制 slide、清理、重打包、渲染、缩略图生成
-- GitHub Actions 工作流已通过
-- GitHub Pages 已启用
+1. 生成 slides
+2. 转图片
+3. 列问题
+4. 修复
+5. 复查
+6. 直到不再出现新问题
 
-## English Summary
+---
 
-`codex-pptx-skill` is a Codex-ready public skill for PowerPoint work. It supports reading `.pptx` files, editing template decks safely, generating decks from scratch, exporting slide images, checking placeholders, and enforcing a stronger design/QA workflow. The repository is inspired by the public capability outline of Anthropic's `pptx` skill, but the contents here are original and openly published under MIT.
+## 转换为图片
+
+```bash
+python skills/pptx-codex/scripts/office/soffice.py --headless --convert-to pdf output.pptx
+python skills/pptx-codex/scripts/office/render.py output.pptx rendered/
+```
+
+或直接：
+
+```bash
+python skills/pptx-codex/scripts/thumbnail.py output.pptx
+```
+
+---
+
+## 依赖
+
+- `pip install "markitdown[pptx]"`：可选文本抽取
+- `pip install Pillow`：缩略图拼板
+- `pip install PyMuPDF`：PDF 栅格化
+- `npm install pptxgenjs`：从零创建
+- LibreOffice `soffice`：PDF 转换
+- Microsoft PowerPoint（Windows，可选）：PDF 导出和高保真渲染
+
+---
+
+## 仓库入口
+
+- 仓库：[github.com/lin521045/codex-pptx-skill](https://github.com/lin521045/codex-pptx-skill)
+- 文档页：[lin521045.github.io/codex-pptx-skill](https://lin521045.github.io/codex-pptx-skill/)
+- 技能目录：[`skills/pptx-codex`](skills/pptx-codex)
+
